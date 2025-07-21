@@ -1,8 +1,15 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { gameWidth } from "../utils/constants";
+import { useDispatch } from "react-redux";
+import { startGame } from "../features/game/gameSlice";
 
 const StartGame = (props) => {
+  const dispatch = useDispatch();
+
+  const handleStart = () => {
+    dispatch(startGame());
+  };
   const button = {
     x: gameWidth / -2, // half width
     y: -280, // minus means up (above 0)
@@ -30,7 +37,11 @@ const StartGame = (props) => {
     onClick: props.onClick,
   };
   return (
-    <g filter="url(#shadow)">
+    <g
+      filter="url(#shadow)"
+      onClick={handleStart}
+      style={{ cursor: "pointer" }}
+    >
       <rect {...button} />
       <text {...text}>Tap To Start!</text>
     </g>
