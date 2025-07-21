@@ -16,9 +16,24 @@ const App = () => {
         dispatch(moveObjects(canvasMousePosition.current));
       }
     }, 10);
-
     return () => clearInterval(interval);
   }, [dispatch]);
+
+  // ✅ Handle canvas responsiveness
+  useEffect(() => {
+    const handleResize = () => {
+      const cnv = document.getElementById("aliens-go-home-canvas");
+      if (cnv) {
+        cnv.style.width = `${window.innerWidth}px`;
+        cnv.style.height = `${window.innerHeight}px`;
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Initial call
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const trackMouse = (event) => {
     canvasMousePosition.current = getCanvasPosition(event);
