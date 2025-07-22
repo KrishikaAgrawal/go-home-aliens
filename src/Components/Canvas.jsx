@@ -69,10 +69,8 @@ const Canvas = ({ angle, trackMouse, onClick, cannonBalls }) => {
         flyingObjects.map((obj) => (
           <FlyingObject key={obj.id} position={obj.position} />
         ))}
-      {/* <Heart position={{ x: -300, y: 35 }} /> */}
       {lives}
-      {/* <StartGame onClick={() => console.log("Aliens, Go Home!")} />
-      <Title /> */}
+      
     </svg>
   );
 };
