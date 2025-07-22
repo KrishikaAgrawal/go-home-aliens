@@ -13,7 +13,7 @@ import Title from "./Title";
 
 import { useSelector } from "react-redux";
 
-const Canvas = ({ angle, trackMouse }) => {
+const Canvas = ({ angle, trackMouse, onClick, cannonBalls }) => {
   const gameHeight = 1200;
   const viewBox = [
     window.innerWidth / -2,
@@ -33,6 +33,7 @@ const Canvas = ({ angle, trackMouse }) => {
       preserveAspectRatio="xMaxYMax none"
       viewBox={viewBox}
       onMouseMove={trackMouse}
+      onClick={onClick}
     >
       <defs>
         <filter id="shadow">
@@ -41,9 +42,11 @@ const Canvas = ({ angle, trackMouse }) => {
       </defs>
       <Sky />
       <Ground />
+      {cannonBalls.map((cannonBall) => (
+        <CannonBall key={cannonBall.id} position={cannonBall.position} />
+      ))}
       <CannonPipe rotation={angle} />
       <CannonBase />
-      <CannonBall position={{ x: 0, y: -100 }} />
       <CurrentScore score={10} />
       {!gameStarted && (
         <>
@@ -65,6 +68,9 @@ const Canvas = ({ angle, trackMouse }) => {
 Canvas.propTypes = {
   angle: PropTypes.number.isRequired,
   trackMouse: PropTypes.func.isRequired,
+  onClick: PropTypes.func.isRequired,
+  cannonBalls: PropTypes.array.isRequired,
 };
+
 
 export default Canvas;
