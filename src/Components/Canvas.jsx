@@ -23,6 +23,9 @@ const Canvas = ({ angle, trackMouse }) => {
   ];
 
   const gameStarted = useSelector((state) => state.game.gameState.started);
+  const flyingObjects = useSelector(
+    (state) => state.game.gameState.flyingObjects
+  );
 
   return (
     <svg
@@ -48,12 +51,10 @@ const Canvas = ({ angle, trackMouse }) => {
           <StartGame />
         </>
       )}
-      {gameStarted && (
-        <>
-          <FlyingObject position={{ x: -150, y: -300 }} />
-          <FlyingObject position={{ x: 150, y: -300 }} />
-        </>
-      )}
+      {gameStarted &&
+        flyingObjects.map((obj) => (
+          <FlyingObject key={obj.id} position={obj.position} />
+        ))}
       <Heart position={{ x: -300, y: 35 }} />
       {/* <StartGame onClick={() => console.log("Aliens, Go Home!")} />
       <Title /> */}

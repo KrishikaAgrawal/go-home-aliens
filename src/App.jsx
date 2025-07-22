@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCanvasPosition } from "./utils/formulas";
 import { moveObjects } from "./features/game/gameSlice";
 import Canvas from "./components/Canvas";
+import createFlyingObjects from "./features/game/createFlyingObjects";
+import { updateGameState } from "./features/game/gameSlice";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -16,6 +18,17 @@ const App = () => {
         dispatch(moveObjects(canvasMousePosition.current));
       }
     }, 10);
+    return () => clearInterval(interval);
+  }, [dispatch]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      dispatch((dispatch, getState) => {
+        const newState = createFlyingObjects(getState().game);
+        dispatch(updateGameState(newState.gameState)); // new action you'll define
+      });
+    }, 1000); // every second
+
     return () => clearInterval(interval);
   }, [dispatch]);
 
@@ -39,7 +52,7 @@ const App = () => {
     canvasMousePosition.current = getCanvasPosition(event);
   };
 
-  return <Canvas angle={angle} trackMouse={trackMouse} />;
+  return <Canvas angle={angle} trackMouse={trackMouse}  />;
 };
 
 App.propTypes = {
