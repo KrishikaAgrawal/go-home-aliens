@@ -26,6 +26,17 @@ const Canvas = ({ angle, trackMouse, onClick, cannonBalls }) => {
   const flyingObjects = useSelector(
     (state) => state.game.gameState.flyingObjects
   );
+  
+  const gameKills = useSelector((state) => state.game.gameState.kills);
+  const gameLives = useSelector((state) => state.game.gameState.lives);
+  const lives = [];
+  for (let i = 0; i < gameLives; i++) {
+    const heartPosition = {
+      x: -180 - i * 70,
+      y: 35,
+    };
+    lives.push(<Heart key={i} position={heartPosition} />);
+  }
 
   return (
     <svg
@@ -47,7 +58,7 @@ const Canvas = ({ angle, trackMouse, onClick, cannonBalls }) => {
       ))}
       <CannonPipe rotation={angle} />
       <CannonBase />
-      <CurrentScore score={10} />
+      <CurrentScore score={gameKills} />
       {!gameStarted && (
         <>
           <Title />
@@ -58,7 +69,8 @@ const Canvas = ({ angle, trackMouse, onClick, cannonBalls }) => {
         flyingObjects.map((obj) => (
           <FlyingObject key={obj.id} position={obj.position} />
         ))}
-      <Heart position={{ x: -300, y: 35 }} />
+      {/* <Heart position={{ x: -300, y: 35 }} /> */}
+      {lives}
       {/* <StartGame onClick={() => console.log("Aliens, Go Home!")} />
       <Title /> */}
     </svg>

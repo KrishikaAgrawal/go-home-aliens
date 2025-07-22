@@ -2,7 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import { calculateAngle } from "../../utils/formulas";
 import createFlyingObjects from "./createFlyingObjects";
 import moveBalls from "./moveCannonBalls";
-import checkCollisions from "./checkCollisions"; // ✅ Add this
+import checkCollisions from "./checkCollisions";
+import { gameHeight } from "../../utils/constants";
 
 const initialState = {
   angle: 45,
@@ -22,19 +23,38 @@ const gameSlice = createSlice({
   reducers: {
     moveObjects: (state, action) => {
       const mousePosition = action.payload || { x: 0, y: 0 };
-      const now = Date.now();
-
       const newState = createFlyingObjects(state);
+
+      const now = new Date().getTime();
+
+      // Move cannonballs
+      let cannonBalls = moveBalls(state.gameState.cannonBalls);
+
+      // Filter out flying objects that have existed longer than 4 seconds
       let flyingObjects = newState.gameState.flyingObjects.filter(
-        (obj) => now - obj.createdAt < 4000
+        (object) => now - object.createdAt < 4000
       );
 
-      let cannonBalls = moveBalls(state.gameState.cannonBalls);
+      // 🔻 Detect life loss
+      const lostLife =
+        state.gameState.flyingObjects.length > flyingObjects.length;
+      let lives = state.gameState.lives;
+      if (lostLife) {
+        lives--;
+      }
+
+      // 🔻 Game over check
+      let started = lives > 0;
+      if (!started) {
+        flyingObjects = [];
+        cannonBalls = [];
+        lives = 3;
+      }
 
       const { x, y } = mousePosition;
       const angle = calculateAngle(0, 0, x, y);
 
-      // ✅ Handle collisions
+      // 🔻 Detect collisions
       const objectsDestroyed = checkCollisions(cannonBalls, flyingObjects);
       const cannonBallsDestroyed = objectsDestroyed.map(
         (obj) => obj.cannonBallId
@@ -43,6 +63,7 @@ const gameSlice = createSlice({
         (obj) => obj.flyingDiscId
       );
 
+      // 🔻 Remove destroyed cannonballs and discs
       cannonBalls = cannonBalls.filter(
         (ball) => !cannonBallsDestroyed.includes(ball.id)
       );
@@ -50,14 +71,20 @@ const gameSlice = createSlice({
         (disc) => !flyingDiscsDestroyed.includes(disc.id)
       );
 
+      // 🔻 Update kills
+      const kills = state.gameState.kills + flyingDiscsDestroyed.length;
+
       return {
         ...newState,
-        angle,
         gameState: {
           ...newState.gameState,
-          cannonBalls,
           flyingObjects,
+          cannonBalls,
+          lives,
+          started,
+          kills,
         },
+        angle,
       };
     },
 
@@ -65,15 +92,12 @@ const gameSlice = createSlice({
       state.gameState.started = true;
       state.gameState.kills = 0;
       state.gameState.lives = 3;
-      state.gameState.flyingObjects = [];
-      state.gameState.cannonBalls = [];
-      state.gameState.lastObjectCreatedAt = Date.now();
     },
 
     updateGameState: (state, action) => {
       const newState = action.payload;
-      state.gameState.flyingObjects = newState.flyingObjects;
-      state.gameState.lastObjectCreatedAt = newState.lastObjectCreatedAt;
+      state.flyingObjects = newState.flyingObjects;
+      state.lastObjectCreatedAt = newState.lastObjectCreatedAt;
     },
 
     shoot: (state, action) => {
