@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import { getCanvasPosition } from "./utils/formulas";
 import { moveObjects, shoot, updateGameState } from "./features/game/gameSlice";
-import Canvas from "./components/Canvas";
+import Canvas from "./Components/Canvas";
 import createFlyingObjects from "./features/game/createFlyingObjects";
 
 const App = () => {
