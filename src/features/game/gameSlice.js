@@ -3,7 +3,6 @@ import { calculateAngle } from "../../utils/formulas";
 import createFlyingObjects from "./createFlyingObjects";
 import moveBalls from "./moveCannonBalls";
 import checkCollisions from "./checkCollisions";
-import { gameHeight } from "../../utils/constants";
 
 const initialState = {
   angle: 45,
@@ -22,6 +21,7 @@ const gameSlice = createSlice({
   initialState,
   reducers: {
     moveObjects: (state, action) => {
+      if (!state.gameState.started) return state;
       const mousePosition = action.payload || { x: 0, y: 0 };
       const newState = createFlyingObjects(state);
 
